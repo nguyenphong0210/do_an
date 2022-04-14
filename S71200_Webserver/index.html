@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+
+    <head>
+        <meta charset="UTF-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <script src="FB/jquery-3.2.1.min.js"></script>
+        <script src="FB/raphael.2.1.0.min.js"></script>
+        <script src="FB/justgage.1.0.1.min.js"></script>
+        <script src="FB/smoothie.js"></script>
+        <!-- ////////////// GỌI CÁC CSS //////////////  -->
+        <link rel="stylesheet" href= "CSS/button.css">
+        <link rel="stylesheet" href= "CSS/main_Screen.css">
+        <link rel="stylesheet" href= "CSS/screen1.css">
+        <link rel="stylesheet" href= "CSS/screen2.css">
+        <link rel="stylesheet" href= "CSS/slidebar.css">  
+        <title>Scada Webserver</title>
+
+        <!-- ////////////// CHƯƠNG TRÌNH CON //////////////  -->
+        <script src="FC/FC1_Common.js" defer></script>
+    </head>
+
+<!-- Phần thân của website -->
+<body>
+        <!-- //////// Code cho slidebar ////////// -->
+        <div id = "slidebar">
+            <!-- Nút chọn màn hình chính -->
+            <button class="button" id="btt_Screen_Main" onclick="
+                fn_ScreenChange('Screen_Main','Screen_1');
+                btt_Auto();
+            ">MÀN HÌNH CHÍNH</button>
+            <!-- Nút chọn màn hình 1 -->
+            <button class="button" id="btt_Screen_1" onclick="
+                fn_ScreenChange('Screen_1','Screen_Main');
+            ">MÀN HÌNH 1</button>                 
+        </div>
+    <!-- //////////////////////Code cho màn hình chính////////////////////// -->
+    <div id = "Screen_Main">
+		<div id="head">
+            <div id="head_logo">
+                <img src="logo.png">
+            </div>
+            <div id="head_text">
+                <h3 style="text-align:center; color:blue;">TRƯỜNG ĐẠI HỌC CÔNG NGHIỆP HÀ NỘI </h3>
+                <h2 style="text-align:center; color:blue;">ĐỒ ÁN TỐT NGHIỆP </h2>
+                <h2 style="text-align:center; color:red;">GIÁM SÁT VÀ ĐIỀU KHIỂN NHIỆT ĐỘ</h2>
+                <h3 style="text-align:center; color:green;">GVHD: TS. PHẠM VĂN HÙNG </h3>
+            </div>
+        </div>        
+        <div id="body1">
+            <!--tin hieu dau vao analog-->
+            <label>đầu vào analog:</label>
+            <br />
+            <input id="tbx_analog_in" disabled="disabled" type="text" style="width: 230px;" />
+            <br /><br />
+            <!--nhiet do-->
+            <label>nhiệt độ thực tế:</label>
+            <br />
+            <input id="tbx_nhiet_do" disabled="disabled" type="text" style="width: 230px;"/>
+            <br /><br />
+            <!--Tag dạng số thực-->
+            <label>setpoint:</label>
+            <br />
+            <input id="tbx_setpoint" disabled="disabled" type="text" style="width: 230px;"/>
+            <br /><br />
+            <!-- Nút nhấn lưu-->
+            <button id="btt_Save" onmousedown="fn_Saving()">LƯU</button>
+            <!-- Nút nhấn sửa-->
+            <button id="btt_Edit" onmousedown="fn_Edditing()">SỬA</button>
+        </div>
+        <div id="body2">
+            <br /> 
+            <img id="Pump_1">
+            <br /> 
+            <!-- Nút nhấn Start-->
+            <button id="btt_Start" onclick="fn_Start()">Start</button>
+            <!-- Nút nhấn Stop-->
+            <button id="btt_Stop" onclick="fn_Stop()">Stop</button>
+            <br /><br /> 
+        </div>
+
+        <div id="Chart_main">
+            <div class="container">
+            
+                <div width="680" style=" position: relative;">
+                    <h2 style="text-align: relative; font-size:100%;color:blue; font-weight:bold;">TEMPERATURE CHART</h2>
+                    <canvas id="mycanvas" width="620" height="180"></canvas>
+                    <p id="time" style="text-align:center;color:blue; margin-top: 50px ;"></p>
+                </div>
+                <script type="text/javascript">
+                    var line1 = new TimeSeries();
+                    var line2 = new TimeSeries();
+                    setInterval(function() {
+                    line1.append(new Date().getTime(), document.getElementById("tbx_setpoint").value);
+                    line2.append(new Date().getTime(), document.getElementById("tbx_nhiet_do").value);
+                    }, 500);
+                    var smoothie = new SmoothieChart({
+                        grid: {
+                            strokeStyle: 'rgba(119, 119, 225, 1)',
+                            fillStyle: 'rgba(0, 0, 0,0)', lineWidth: 0, millisPerLine: 1000, verticalSections: 6
+                        },
+                        labels: { fillStyle:'rgb(60, 0, 0)' },
+                        maxValue: 100, minValue: 0, millisPerPixel: 20, maxValueScale: 0.86, scaleSmoothing: 0.266,
+                        timestampFormatter: SmoothieChart.timeFormatter
+                    });
+                    // add giá trị vào chart
+                    smoothie.addTimeSeries(line1, { strokeStyle: 'rgb(24, 59, 246)', lineWidth: 3 });
+                    smoothie.addTimeSeries(line2, { strokeStyle: 'rgb(255, 125, 0)', lineWidth: 3 });
+                    smoothie.streamTo(document.getElementById("mycanvas"), 500 /*delay*/);      
+                    
+                </script>
+            </div>
+        </div>
+
+    </div> 
+    <!-- /////////////////Code cho màn hình 1/////////////////// -->
+    <div id= "Screen_1">
+        <div class="container">
+            
+            <div width="680" style=" position: relative;">
+                <h2 style="text-align: relative; font-size:100%;color:blue; font-weight:bold;">TEMPERATURE CHART</h2>
+                <canvas id="mycanvas" width="620" height="180"></canvas>
+                <p id="time" style="text-align:center;color:blue; margin-top: 50px ;"></p>
+            </div>
+            <script type="text/javascript">
+                var line1 = new TimeSeries();
+                var line2 = new TimeSeries();
+                setInterval(function() {
+                line1.append(new Date().getTime(), document.getElementById("tbx_setpoint").value);
+                line2.append(new Date().getTime(), document.getElementById("tbx_nhiet_do").value);
+                }, 500);
+                var smoothie = new SmoothieChart({
+					grid: {
+						strokeStyle: 'rgba(119, 119, 225, 1)',
+						fillStyle: 'rgba(0, 0, 0,0)', lineWidth: 0, millisPerLine: 1000, verticalSections: 6
+					},
+                    labels: { fillStyle:'rgb(60, 0, 0)' },
+					maxValue: 100, minValue: 0, millisPerPixel: 20, maxValueScale: 0.86, scaleSmoothing: 0.266,
+					timestampFormatter: SmoothieChart.timeFormatter
+				});
+                // add giá trị vào chart
+                smoothie.addTimeSeries(line1, { strokeStyle: 'rgb(24, 59, 246)', lineWidth: 3 });
+                smoothie.addTimeSeries(line2, { strokeStyle: 'rgb(255, 125, 0)', lineWidth: 3 });
+                smoothie.streamTo(document.getElementById("mycanvas"), 500 /*delay*/);      
+                
+            </script>
+        </div>
+    </div>
+    </body>    
+</html>
